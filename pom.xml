@@ -13,10 +13,9 @@
   <name>Sonar Mantis Plugin</name>
   <description>Retrieves the number of project issues from Mantis BugTracker.</description>
   <url>http://docs.codehaus.org/display/SONAR/mantis+Plugin</url>
+  <inceptionYear>2011</inceptionYear>
 
   <organization>
-    <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
   </organization>
   <licenses>
     <license>
@@ -28,7 +27,7 @@
 
   <developers>
     <developer>
-      <id>jerr</id>
+      <id>jer</id>
       <name>Jérémie Lagarde</name>
       <timezone>+1</timezone>
     </developer>
@@ -55,6 +54,11 @@
 
     <!-- Exclude generated classes from Sonar analyzes -->
     <sonar.exclusions>biz/futureware/**</sonar.exclusions>
+    
+    <!-- License header configuration -->
+    <license.title>Sonar plugin for Mantis</license.title>
+    <license.owner>Jérémie Lagarde</license.owner>
+    <license.mailto>mailto: jer AT printstacktrace DOR org</license.mailto>
   </properties>
 
   <dependencies>

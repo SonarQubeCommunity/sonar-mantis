@@ -16,6 +16,7 @@
   <inceptionYear>2011</inceptionYear>
 
   <organization>
+    <url>http://printstacktrace.org</url>
   </organization>
   <licenses>
     <license>
@@ -58,7 +59,7 @@
     <!-- License header configuration -->
     <license.title>Sonar plugin for Mantis</license.title>
     <license.owner>Jérémie Lagarde</license.owner>
-    <license.mailto>mailto: jer AT printstacktrace DOR org</license.mailto>
+    <license.mailto>mailto: jer AT printstacktrace DOT org</license.mailto>
   </properties>
 
   <dependencies>

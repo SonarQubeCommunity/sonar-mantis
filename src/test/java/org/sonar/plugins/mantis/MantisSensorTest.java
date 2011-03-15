@@ -21,19 +21,31 @@
 package org.sonar.plugins.mantis;
 
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.resources.Project;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.plugins.mantis.soap.MantisSoapService;
 
+import biz.futureware.mantis.rpc.soap.client.FilterData;
+import biz.futureware.mantis.rpc.soap.client.IssueData;
 import biz.futureware.mantis.rpc.soap.client.ObjectRef;
 
 /**
@@ -45,7 +57,37 @@ public class MantisSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new MantisSensor();
+    sensor = new MantisSensor() {
+      
+      protected boolean isMandatoryParametersNotEmpty() {
+        return true;
+      }
+      protected void initParams(Project project) {};
+      public String getFilterName() { return ""; };
+      protected MantisSoapService createMantisSoapService() throws RemoteException ,MalformedURLException {
+        MantisSoapService service = mock(MantisSoapService.class);
+        IssueData[] issues = new IssueData[5];
+        issues[0] = new IssueData();
+        issues[0].setPriority(new ObjectRef(BigInteger.valueOf(1),"normal"));
+        issues[0].setStatus(new ObjectRef(BigInteger.valueOf(1),"assigned"));
+        issues[1] = new IssueData();
+        issues[1].setPriority(new ObjectRef(BigInteger.valueOf(2),"high"));
+        issues[1].setStatus(new ObjectRef(BigInteger.valueOf(2),"resolved"));
+        issues[2] = new IssueData();
+        issues[2].setPriority(new ObjectRef(BigInteger.valueOf(1),"normal"));
+        issues[2].setStatus(new ObjectRef(BigInteger.valueOf(1),"assigned"));
+        issues[3] = new IssueData();
+        issues[3].setPriority(new ObjectRef(BigInteger.valueOf(1),"normal"));
+        issues[3].setStatus(new ObjectRef(BigInteger.valueOf(3),"closed"));
+        issues[4] = new IssueData();
+        issues[4].setPriority(new ObjectRef(BigInteger.valueOf(3),"urgent"));
+        issues[4].setStatus(new ObjectRef(BigInteger.valueOf(1),"assigned"));
+        FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "", "");
+        when(service.getFilters()).thenReturn(new FilterData[] {filter});
+        when(service.getIssues(filter)).thenReturn(issues);
+        return service; 
+      }
+    };
   }
 
   @Test
@@ -70,5 +112,12 @@ public class MantisSensorTest {
     sensor.saveMeasures(context, BigInteger.ONE, MantisMetrics.STATUS, issuesByStatus);
     verify(context).saveMeasure(argThat(new IsMeasure(MantisMetrics.STATUS, 15.0, "assigned=4;resolved=5;closed=6")));
     verifyNoMoreInteractions(context);
+  }
+
+  @Test
+  public void testAnalyse() {
+    SensorContext context = mock(SensorContext.class);
+    Project project = mock(Project.class);
+    sensor.analyse(project, context);
   }
 }

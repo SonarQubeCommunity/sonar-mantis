@@ -21,6 +21,7 @@
 package org.sonar.plugins.mantis;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -54,6 +55,31 @@ public class MantisSensor implements Sensor {
   private String username;
   private String password;
   private String filterName;
+  
+  public String getServerUrl() {
+    return serverUrl;
+  }
+
+  
+  public String getUsername() {
+    return username;
+  }
+
+  
+  public String getPassword() {
+    return password;
+  }
+
+  
+  public String getFilterName() {
+    return filterName;
+  }
+
+  
+  public String getProjectName() {
+    return projectName;
+  }
+
   private String projectName;
 
   public void analyse(Project project, SensorContext context) {
@@ -63,7 +89,7 @@ public class MantisSensor implements Sensor {
       return;
     }
     try {
-      MantisSoapService service = new MantisSoapService(new URL(serverUrl + "/api/soap/mantisconnect.php"));
+      MantisSoapService service = createMantisSoapService();
       service.connect(username, password, projectName);
       analyze(context, service);
       service.disconnect();
@@ -72,11 +98,15 @@ public class MantisSensor implements Sensor {
     }
   }
 
+  protected MantisSoapService createMantisSoapService() throws RemoteException, MalformedURLException {
+    return new MantisSoapService(new URL(serverUrl + "/api/soap/mantisconnect.php"));
+  }
+
   private void analyze(SensorContext context, MantisSoapService service) throws RemoteException {
     FilterData[] filters = service.getFilters();
     FilterData filter = null;
     for (FilterData f : filters) {
-      if (filterName.equals(f.getName())) {
+      if (getFilterName().equals(f.getName())) {
         filter = f;
       }
     }
@@ -106,7 +136,7 @@ public class MantisSensor implements Sensor {
     saveMeasures(context, service.getProjectId(), MantisMetrics.STATUS, issuesByStatus);
   }
 
-  private void initParams(Project project) {
+  protected void initParams(Project project) {
     Configuration configuration = project.getConfiguration();
     serverUrl = configuration.getString(MantisPlugin.SERVER_URL_PROPERTY);
     username = configuration.getString(MantisPlugin.USERNAME_PROPERTY);
@@ -115,7 +145,7 @@ public class MantisSensor implements Sensor {
     projectName = configuration.getString(MantisPlugin.PROJECTNAME_PROPERTY);
   }
 
-  private boolean isMandatoryParametersNotEmpty() {
+  protected boolean isMandatoryParametersNotEmpty() {
     return StringUtils.isNotEmpty(serverUrl) && StringUtils.isNotEmpty(filterName) && StringUtils.isNotEmpty(projectName)
         && StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password);
   }

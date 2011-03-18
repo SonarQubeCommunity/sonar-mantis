@@ -45,7 +45,6 @@ public class MantisSoapService {
 
   private static final Logger LOG = LoggerFactory.getLogger(MantisSoapService.class);
 
-  private MantisConnectLocator mantisConnectLocator;
   private MantisConnectPortType mantisConnectPortType;
   private String username;
   private String password;
@@ -59,7 +58,7 @@ public class MantisSoapService {
   }
 
   public MantisSoapService(URL webServiceURL) throws RemoteException {
-    mantisConnectLocator = new MantisConnectLocator();
+    MantisConnectLocator mantisConnectLocator = createMantisConnectLocator();
     try {
       if (webServiceURL == null) {
         mantisConnectPortType = mantisConnectLocator.getMantisConnectPort();
@@ -101,4 +100,7 @@ public class MantisSoapService {
   public void disconnect() throws RemoteException {
   }
 
+  protected MantisConnectLocator createMantisConnectLocator() {
+    return new MantisConnectLocator();
+  }
 }

@@ -20,39 +20,23 @@
 
 package org.sonar.plugins.mantis;
 
-import biz.futureware.mantis.rpc.soap.client.ObjectRef;
+import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author Jeremie Lagarde
  * @since 0.1
  */
-public class MantisProperty implements Comparable<MantisProperty> {
+public class MantisWidgetTest {
 
-  private final ObjectRef ref;
-
-  public MantisProperty(ObjectRef ref) {
-    this.ref = ref;
+  @Test
+  public void testWidgetDefinition() {
+    MantisWidget widget = new MantisWidget();
+    assertThat(widget.getId(), notNullValue());
+    assertThat(widget.getTitle(), notNullValue());
+    assertThat(getClass().getResource(widget.getTemplatePath()), notNullValue());
   }
 
-  public int compareTo(MantisProperty o) {
-    return ref.getId().compareTo(o.ref.getId());
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof MantisProperty) {
-      return this.ref.equals(((MantisProperty) obj).ref);
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return ref.getId().hashCode();
-  }
-
-  @Override
-  public String toString() {
-    return ref.getName();
-  }
 }

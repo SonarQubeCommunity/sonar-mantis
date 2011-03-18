@@ -20,39 +20,26 @@
 
 package org.sonar.plugins.mantis;
 
-import biz.futureware.mantis.rpc.soap.client.ObjectRef;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.sonar.api.measures.Metric;
 
 /**
  * @author Jeremie Lagarde
  * @since 0.1
  */
-public class MantisProperty implements Comparable<MantisProperty> {
+public class MantisMetricsTest {
 
-  private final ObjectRef ref;
-
-  public MantisProperty(ObjectRef ref) {
-    this.ref = ref;
-  }
-
-  public int compareTo(MantisProperty o) {
-    return ref.getId().compareTo(o.ref.getId());
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof MantisProperty) {
-      return this.ref.equals(((MantisProperty) obj).ref);
+  @Test
+  public void testGetMetrics() throws Exception {
+    List<Metric> metrics = new MantisMetrics().getMetrics();
+    assertThat(metrics.size(), is(2));
+    for (Metric metric : metrics) {
+      assertThat(metric.getDomain(), is(MantisMetrics.DOMAIN));
     }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return ref.getId().hashCode();
-  }
-
-  @Override
-  public String toString() {
-    return ref.getName();
   }
 }

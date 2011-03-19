@@ -27,7 +27,10 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.configuration.MapConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
@@ -73,11 +76,11 @@ public class MantisSensorTest {
           issues[4] = new IssueData();
           issues[4].setPriority(new ObjectRef(BigInteger.valueOf(3), "urgent"));
           issues[4].setStatus(new ObjectRef(BigInteger.valueOf(1), "assigned"));
-          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "", "");
+          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "");
           when(locator.getMantisConnectPort()).thenReturn(portType);
-          when(portType.mc_project_get_id_from_name(null, null, null)).thenReturn(BigInteger.ONE);
-          when(portType.mc_filter_get(null, null, BigInteger.ONE)).thenReturn(new FilterData[] { filter });
-          when(portType.mc_filter_get_issues(null, null, BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(100))).thenReturn(
+          when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
+          when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });
+          when(portType.mc_filter_get_issues("jer", "pwd", BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(100))).thenReturn(
               issues);
         } catch (Exception e) {
           fail();
@@ -87,18 +90,6 @@ public class MantisSensorTest {
     };
 
     sensor = new MantisSensor() {
-
-      protected boolean isMandatoryParametersNotEmpty() {
-        return true;
-      }
-
-      protected void initParams(Project project) {
-      };
-
-      public String getFilterName() {
-        return "";
-      };
-
       protected MantisSoapService createMantisSoapService() throws RemoteException, MalformedURLException {
         return service;
       }
@@ -110,6 +101,13 @@ public class MantisSensorTest {
   public void testAnalyse() {
     SensorContext context = mock(SensorContext.class);
     Project project = mock(Project.class);
+    Map<String, String> config = new HashMap<String, String>();
+    config.put(MantisPlugin.SERVER_URL_PROPERTY, "http://localhost:1234/mantis/");
+    config.put(MantisPlugin.USERNAME_PROPERTY, "jer");
+    config.put(MantisPlugin.PASSWORD_PROPERTY, "pwd");
+    config.put(MantisPlugin.PROJECTNAME_PROPERTY, "myproject");
+    config.put(MantisPlugin.FILTER_PROPERTY, "current-version");
+    when(project.getConfiguration()).thenReturn(new MapConfiguration(config));
     sensor.analyse(project, context);
   }
 }

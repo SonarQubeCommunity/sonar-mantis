@@ -1,7 +1,7 @@
 /*
- * Sonar plugin for Mantis
+ * Sonar Mantis Plugin
  * Copyright (C) 2011 Jérémie Lagarde
- * mailto: jer AT printstacktrace DOT org
+ * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

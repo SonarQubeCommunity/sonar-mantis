@@ -57,9 +57,7 @@
     <sonar.exclusions>biz/futureware/**</sonar.exclusions>
     
     <!-- License header configuration -->
-    <license.title>Sonar plugin for Mantis</license.title>
     <license.owner>Jérémie Lagarde</license.owner>
-    <license.mailto>mailto: jer AT printstacktrace DOT org</license.mailto>
   </properties>
 
   <dependencies>

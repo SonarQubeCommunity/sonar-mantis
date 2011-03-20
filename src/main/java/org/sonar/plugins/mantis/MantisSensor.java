@@ -93,13 +93,19 @@ public class MantisSensor implements Sensor {
       service.connect(username, password, projectName);
       analyze(context, service);
       service.disconnect();
-    } catch (Exception e) {
-      LOG.error("Error accessing Mantis web service, please verify the parameters", e);
+    } catch (RemoteException e) {
+      throw new SonarException("Error accessing Mantis web service, please verify the parameters", e);
     }
   }
 
-  protected MantisSoapService createMantisSoapService() throws RemoteException, MalformedURLException {
-    return new MantisSoapService(new URL(serverUrl + "/api/soap/mantisconnect.php"));
+  protected MantisSoapService createMantisSoapService() throws RemoteException {
+    URL url;
+    try {
+      url = new URL(serverUrl + "/api/soap/mantisconnect.php");
+    } catch (MalformedURLException e) {
+      throw new SonarException("Error Mantis web service url \""+serverUrl + "/api/soap/mantisconnect.php"+"\", please verify the parameters", e);
+    }
+    return new MantisSoapService(url);
   }
 
   private void analyze(SensorContext context, MantisSoapService service) throws RemoteException {

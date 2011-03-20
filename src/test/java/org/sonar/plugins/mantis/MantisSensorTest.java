@@ -90,7 +90,7 @@ public class MantisSensorTest {
     };
 
     sensor = new MantisSensor() {
-      protected MantisSoapService createMantisSoapService() throws RemoteException, MalformedURLException {
+      protected MantisSoapService createMantisSoapService() throws RemoteException {
         return service;
       }
     };

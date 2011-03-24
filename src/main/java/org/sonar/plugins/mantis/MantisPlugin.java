@@ -46,7 +46,7 @@ public class MantisPlugin implements Plugin {
   public final static String SERVER_URL_PROPERTY = "sonar.mantis.url";
   public final static String USERNAME_PROPERTY = "sonar.mantis.login.secured";
   public final static String PASSWORD_PROPERTY = "sonar.mantis.password.secured";
-  public final static String FILTER_PROPERTY = "sonar.mantis.url.param";
+  public final static String FILTER_PROPERTY = "sonar.mantis.filter.param";
   public final static String PROJECTNAME_PROPERTY = "sonar.mantis.project.param";
 
   public String getKey() {

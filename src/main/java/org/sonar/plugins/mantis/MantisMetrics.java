@@ -34,10 +34,10 @@ public class MantisMetrics implements Metrics {
 
   public static final String DOMAIN = "Issues";
 
-  public static final Metric PRIORITIES = new Metric("issues_priorities", "Mantis Issues Priorities",
+  public static final Metric PRIORITIES = new Metric("mantis_issues_priorities", "Mantis Issues Priorities",
       "Number of Mantis Issues by Priorities", Metric.ValueType.INT, Metric.DIRECTION_NONE, false, DOMAIN);
 
-  public static final Metric STATUS = new Metric("issues_status", "Mantis Issues Status", "Number of Mantis Issues by Status",
+  public static final Metric STATUS = new Metric("mantis_issues_status", "Mantis Issues Status", "Number of Mantis Issues by Status",
       Metric.ValueType.INT, Metric.DIRECTION_NONE, false, DOMAIN);
 
   public List<Metric> getMetrics() {

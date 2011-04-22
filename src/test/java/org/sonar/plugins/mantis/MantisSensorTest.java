@@ -76,7 +76,7 @@ public class MantisSensorTest {
           issues[4] = new IssueData();
           issues[4].setPriority(new ObjectRef(BigInteger.valueOf(3), "urgent"));
           issues[4].setStatus(new ObjectRef(BigInteger.valueOf(1), "assigned"));
-          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "");
+          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "",null);
           when(locator.getMantisConnectPort()).thenReturn(portType);
           when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
           when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });

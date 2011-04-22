@@ -72,7 +72,7 @@ public class MantisSoapService {
   }
 
   public void connect(String login, String password, String project) throws RemoteException {
-    LOG.debug("Connnecting via SOAP as : {}", login);
+    LOG.debug("Connnecting via SOAP as : {} for project : {}", login, project);
     this.username = login;
     this.password = password;
     projectId = mantisConnectPortType.mc_project_get_id_from_name(login, password, project);

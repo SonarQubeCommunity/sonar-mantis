@@ -118,6 +118,10 @@ public class MantisSensor implements Sensor {
     }
 
     if (filter == null) {
+      LOG.debug("Unable to find filter '{}' in Mantis for projectId {}",filterName,service.getProjectId());
+      for (FilterData f : filters) {
+        LOG.debug("   - {} : {}",f.getName(),f.getId());
+      } 
       throw new SonarException("Unable to find filter '" + filterName + "' in Mantis");
     }
 

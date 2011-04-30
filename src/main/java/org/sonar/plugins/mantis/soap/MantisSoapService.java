@@ -76,21 +76,22 @@ public class MantisSoapService {
     this.username = login;
     this.password = password;
     projectId = mantisConnectPortType.mc_project_get_id_from_name(login, password, project);
-    LOG.debug("Connected");
+    String version = mantisConnectPortType.mc_version();
+    LOG.info("Connected in Mantis({})",version);
   }
 
   public FilterData[] getFilters() throws RemoteException {
-    LOG.debug("Get filters via SOAP for : {}", projectId);
-    return mantisConnectPortType.mc_filter_get(username, password, projectId);
+    LOG.debug("Get filters via SOAP for : {}", getProjectId());
+    return mantisConnectPortType.mc_filter_get(username, password, getProjectId());
   }
 
   public IssueData[] getIssues(FilterData filter) throws RemoteException {
-    LOG.debug("Get issues via SOAP for {} : {}", projectId, filter.getName());
+    LOG.debug("Get issues via SOAP for {} : {}", getProjectId(), filter.getName());
     List<IssueData> issues = new ArrayList<IssueData>();
     IssueData[] result = null;
     int page = 1;
     do {
-      result = mantisConnectPortType.mc_filter_get_issues(username, password, projectId, filter.getId(), BigInteger.valueOf(page++),
+      result = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(page++),
           BigInteger.valueOf(100));
       issues.addAll(Arrays.asList(result));
     } while (result.length == 100);

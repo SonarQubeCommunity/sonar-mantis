@@ -77,7 +77,7 @@ public class MantisSoapService {
     this.password = password;
     projectId = mantisConnectPortType.mc_project_get_id_from_name(login, password, project);
     String version = mantisConnectPortType.mc_version();
-    LOG.info("Connected in Mantis({})",version);
+    LOG.info("Connected to Mantis({})",version);
   }
 
   public FilterData[] getFilters() throws RemoteException {

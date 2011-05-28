@@ -95,10 +95,10 @@ public class MantisSoapService {
       result = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(page++),
           BigInteger.valueOf(100));
       if(result.length != 0){ 
-        firstIssueInPage = result[0].getId();
         if( firstIssueInPage.equals(result[0].getId())) {
           result = new IssueData[0];
         }
+        firstIssueInPage = result[0].getId();
         issues.addAll(Arrays.asList(result));       
       }
     } while (result.length == 100);

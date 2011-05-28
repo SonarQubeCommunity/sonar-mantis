@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.measures.CountDistributionBuilder;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.PropertiesBuilder;
@@ -126,24 +127,15 @@ public class MantisSensor implements Sensor {
     }
 
     IssueData[] issues = service.getIssues(filter);
-    Map<MantisProperty, Integer> issuesByPriority = new HashMap<MantisProperty, Integer>();
-    Map<MantisProperty, Integer> issuesByStatus = new HashMap<MantisProperty, Integer>();
+    CountDistributionBuilder issuesByPriority = new CountDistributionBuilder(MantisMetrics.PRIORITIES);
+    CountDistributionBuilder issuesByStatus = new CountDistributionBuilder(MantisMetrics.STATUS);
+
     for (IssueData issue : issues) {
-      MantisProperty priority = new MantisProperty(issue.getPriority());
-      if ( !issuesByPriority.containsKey(priority)) {
-        issuesByPriority.put(priority, 1);
-      } else {
-        issuesByPriority.put(priority, issuesByPriority.get(priority) + 1);
-      }
-      MantisProperty status = new MantisProperty(issue.getStatus());
-      if ( !issuesByStatus.containsKey(status)) {
-        issuesByStatus.put(status, 1);
-      } else {
-        issuesByStatus.put(status, issuesByStatus.get(status) + 1);
-      }
-    }
-    saveMeasures(context, service.getProjectId(), MantisMetrics.PRIORITIES, issuesByPriority);
-    saveMeasures(context, service.getProjectId(), MantisMetrics.STATUS, issuesByStatus);
+      issuesByPriority.add(new MantisProperty(issue.getPriority()));
+      issuesByStatus.add(new MantisProperty(issue.getStatus()));
+     }
+    saveMeasures(context, service.getProjectId(), issuesByPriority.build().setValue((double) issues.length));
+    saveMeasures(context, service.getProjectId(), issuesByStatus.build().setValue((double) issues.length));
   }
 
   protected void initParams(Project project) {
@@ -160,17 +152,9 @@ public class MantisSensor implements Sensor {
         && StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password);
   }
 
-  protected void saveMeasures(SensorContext context, BigInteger projectId, Metric metric, Map<MantisProperty, Integer> mesures) {
-    double total = 0;
-    PropertiesBuilder<MantisProperty, Integer> distribution = new PropertiesBuilder<MantisProperty, Integer>();
-    for (Map.Entry<MantisProperty, Integer> entry : mesures.entrySet()) {
-      total += entry.getValue();
-      distribution.add(entry.getKey(), entry.getValue());
-    }
+  protected void saveMeasures(SensorContext context, BigInteger projectId, Measure issuesMeasure) {
     String url = serverUrl + "/search.php?project_id=" + projectId + "&sticky_issues=on&sortby=property&dir=DESC&hide_status_id=-2";
-    Measure issuesMeasure = new Measure(metric, total);
     issuesMeasure.setUrl(url);
-    issuesMeasure.setData(distribution.buildData());
     context.saveMeasure(issuesMeasure);
   }
 

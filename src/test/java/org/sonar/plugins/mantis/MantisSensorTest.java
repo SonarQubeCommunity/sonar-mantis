@@ -20,28 +20,42 @@
 
 package org.sonar.plugins.mantis;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.wsdl.Message;
 
 import org.apache.commons.configuration.MapConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.stubbing.answers.CallsRealMethods;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.measures.Measure;
+import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
 import org.sonar.plugins.mantis.soap.MantisSoapService;
 
+import biz.futureware.mantis.rpc.soap.client.AccountData;
 import biz.futureware.mantis.rpc.soap.client.FilterData;
 import biz.futureware.mantis.rpc.soap.client.IssueData;
 import biz.futureware.mantis.rpc.soap.client.MantisConnectLocator;
 import biz.futureware.mantis.rpc.soap.client.MantisConnectPortType;
 import biz.futureware.mantis.rpc.soap.client.ObjectRef;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * @author Jeremie Lagarde
@@ -59,34 +73,27 @@ public class MantisSensorTest {
       protected MantisConnectLocator createMantisConnectLocator() {
         MantisConnectLocator locator = mock(MantisConnectLocator.class);
         MantisConnectPortType portType = mock(MantisConnectPortType.class);
+        String[] status = new String[] { "new", "feedback", "acknowledged", "confirmed", "assigned", "resolved", "validated", "closed" };
+        String[] priorities = new String[] { "low", "normal", "high", "urgent", "immediate" };
+        String[] users = new String[] { "user1", "user2", "user3", "user4", "user5", "user6", "user7", "user8", "user9", "user10",
+            "user11", "user12", "user13", "user14", "user15", "user16", "user17", "user18", "user19", "user20" };
+
         try {
-          IssueData[] issues = new IssueData[5];
-          issues[0] = new IssueData();
-          issues[0].setPriority(new ObjectRef(BigInteger.valueOf(1), "normal"));
-          issues[0].setStatus(new ObjectRef(BigInteger.valueOf(1), "assigned"));
-          issues[0].setId(BigInteger.ONE);
-          issues[1] = new IssueData();
-          issues[1].setPriority(new ObjectRef(BigInteger.valueOf(2), "high"));
-          issues[1].setStatus(new ObjectRef(BigInteger.valueOf(2), "resolved"));
-          issues[1].setId(BigInteger.valueOf(2));
-          issues[2] = new IssueData();
-          issues[2].setPriority(new ObjectRef(BigInteger.valueOf(1), "normal"));
-          issues[2].setStatus(new ObjectRef(BigInteger.valueOf(1), "assigned"));
-          issues[2].setId(BigInteger.valueOf(3));
-          issues[3] = new IssueData();
-          issues[3].setPriority(new ObjectRef(BigInteger.valueOf(1), "normal"));
-          issues[3].setStatus(new ObjectRef(BigInteger.valueOf(3), "closed"));
-          issues[3].setId(BigInteger.valueOf(4));
-          issues[4] = new IssueData();
-          issues[4].setPriority(new ObjectRef(BigInteger.valueOf(3), "urgent"));
-          issues[4].setStatus(new ObjectRef(BigInteger.valueOf(1), "assigned"));
-          issues[4].setId(BigInteger.valueOf(5));
-          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "",null);
+          List<IssueData> issues = new ArrayList<IssueData>();
+          for (int i = 0; i < 1000; i++) {
+            IssueData issue = new IssueData();
+            issue.setId(BigInteger.valueOf(i + 1));
+            issue.setPriority(new ObjectRef(BigInteger.valueOf(i% 5), priorities[i% 5]));
+            issue.setStatus(new ObjectRef(BigInteger.valueOf(i % 8), status[i % 8]));
+            issue.setHandler(new AccountData(BigInteger.valueOf(i % 20), users[i % 20], users[i % 20], users[i % 20] + "@gmail.com"));
+            issues.add(issue);
+          }
+          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "", null);
           when(locator.getMantisConnectPort()).thenReturn(portType);
           when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
           when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });
-          when(portType.mc_filter_get_issues("jer", "pwd", BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(100))).thenReturn(
-              issues);
+          when(portType.mc_filter_get_issues("jer", "pwd", BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(100)))
+              .thenReturn((IssueData[])issues.toArray(new IssueData[issues.size()]));
         } catch (Exception e) {
           fail();
         }
@@ -95,16 +102,16 @@ public class MantisSensorTest {
     };
 
     sensor = new MantisSensor() {
+
       protected MantisSoapService createMantisSoapService() throws RemoteException {
         return service;
       }
     };
   }
 
-
   @Test
   public void testAnalyse() {
-    SensorContext context = mock(SensorContext.class);
+    SensorContext context = mock(MockSensorContext.class, new CallsRealMethods());
     Project project = mock(Project.class);
     Map<String, String> config = new HashMap<String, String>();
     config.put(MantisPlugin.SERVER_URL_PROPERTY, "http://localhost:1234/mantis/");
@@ -114,5 +121,48 @@ public class MantisSensorTest {
     config.put(MantisPlugin.FILTER_PROPERTY, "current-version");
     when(project.getConfiguration()).thenReturn(new MapConfiguration(config));
     sensor.analyse(project, context);
+    assertThat(context.getMeasure(MantisMetrics.PRIORITIES).getValue(), is(Double.valueOf(1000)));
+    assertThat(context.getMeasure(MantisMetrics.PRIORITIES).getData(), is("low=200;normal=200;high=200;urgent=200;immediate=200"));
+    assertThat(context.getMeasure(MantisMetrics.STATUS).getValue(), is(Double.valueOf(1000)));
+    assertThat(context.getMeasure(MantisMetrics.STATUS).getData(), is("new=125;feedback=125;acknowledged=125;confirmed=125;assigned=125;resolved=125;validated=125;closed=125"));
+
   }
+
+  abstract class MockSensorContext implements SensorContext {
+
+    Multimap<Resource, Measure> measures;
+
+    private Multimap<Resource, Measure> getMeasures() {
+      if (measures == null) {
+        measures = ArrayListMultimap.create();
+      }
+      return measures;
+    }
+
+    public Measure saveMeasure(Resource resource, Measure measure) {
+      getMeasures().put(resource, measure);
+      return measure;
+    }
+
+    public Measure saveMeasure(Measure measure) {
+      getMeasures().put(null, measure);
+      return measure;
+    }
+
+    public Measure saveMeasure(Metric metric, Double value) {
+      return saveMeasure(new Measure(metric, value));
+    }
+
+    public Measure getMeasure(Resource resource, Metric metric) {
+      for (Measure measure : getMeasures().get(resource)) {
+        if (measure.getMetric().equals(metric))
+          return measure;
+      }
+      return null;
+    }
+
+    public Measure getMeasure(Metric metric) {
+      return getMeasure(null, metric);
+    }
+  };
 }

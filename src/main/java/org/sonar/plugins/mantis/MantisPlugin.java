@@ -67,6 +67,7 @@ public class MantisPlugin implements Plugin {
     list.add(MantisMetrics.class);
     list.add(MantisSensor.class);
     list.add(MantisWidget.class);
+    list.add(MantisDeveloperWidget.class);
     return list;
   }
 }

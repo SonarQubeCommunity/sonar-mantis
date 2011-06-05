@@ -1,0 +1,34 @@
+<%
+   developers_measure = measure('mantis_developers')
+   if developers_measure
+%>
+  <div class="yui-g">
+    <div class="yui-u first">
+      <div class="dashbox">
+        <p class="title">Mantis Issues</p>
+        <table>
+          <% developers_measure.data.split(";").each do |developer_with_size|
+            developer_with_size_array = developer_with_size.split("=") %>
+            <tr>
+              <td align="left">
+                <%= developer_with_size_array[0] -%>
+              </td>
+              <td align="right" style="padding-left: 10px;">
+                <%= developer_with_size_array[1] -%>
+              </td>
+              <td align="left" style="padding-left: 10px;">
+                <span style='width:100%'><ul class='hbar' style='float: right;'><li style='background-color: rgb(119, 119, 119); width: <%= (developer_with_size_array[1].to_f * 100 / developers_measure.value.to_f ).ceil -%>%'>&nbsp;</li></ul></span>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+    <div class="yui-u">
+      <div class="dashbox">
+  		<%= piechart(developers_measure) -%>
+      </div>
+      	
+    </div>
+  </div>
+<% end %>

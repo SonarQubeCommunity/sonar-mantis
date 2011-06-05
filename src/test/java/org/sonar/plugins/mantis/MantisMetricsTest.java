@@ -37,7 +37,7 @@ public class MantisMetricsTest {
   @Test
   public void testGetMetrics() throws Exception {
     List<Metric> metrics = new MantisMetrics().getMetrics();
-    assertThat(metrics.size(), is(2));
+    assertThat(metrics.size(), is(3));
     for (Metric metric : metrics) {
       assertThat(metric.getDomain(), is(MantisMetrics.DOMAIN));
     }

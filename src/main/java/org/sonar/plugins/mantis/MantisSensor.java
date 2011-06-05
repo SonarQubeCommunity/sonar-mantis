@@ -24,8 +24,6 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
@@ -35,8 +33,6 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.CountDistributionBuilder;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.measures.Metric;
-import org.sonar.api.measures.PropertiesBuilder;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.SonarException;
 import org.sonar.plugins.mantis.soap.MantisSoapService;
@@ -129,13 +125,16 @@ public class MantisSensor implements Sensor {
     IssueData[] issues = service.getIssues(filter);
     CountDistributionBuilder issuesByPriority = new CountDistributionBuilder(MantisMetrics.PRIORITIES);
     CountDistributionBuilder issuesByStatus = new CountDistributionBuilder(MantisMetrics.STATUS);
+    CountDistributionBuilder issuesByDevelopers = new CountDistributionBuilder(MantisMetrics.DEVELOPERS);
 
     for (IssueData issue : issues) {
       issuesByPriority.add(new MantisProperty(issue.getPriority()));
       issuesByStatus.add(new MantisProperty(issue.getStatus()));
-     }
+      issuesByDevelopers.add(issue.getHandler()!=null?issue.getHandler().getName():"unassigned");
+    }
     saveMeasures(context, service.getProjectId(), issuesByPriority.build().setValue((double) issues.length));
     saveMeasures(context, service.getProjectId(), issuesByStatus.build().setValue((double) issues.length));
+    saveMeasures(context, service.getProjectId(), issuesByDevelopers.build().setValue((double) issues.length));
   }
 
   protected void initParams(Project project) {

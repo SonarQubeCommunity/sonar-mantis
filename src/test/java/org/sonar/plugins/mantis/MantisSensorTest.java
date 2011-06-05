@@ -125,7 +125,8 @@ public class MantisSensorTest {
     assertThat(context.getMeasure(MantisMetrics.PRIORITIES).getData(), is("low=200;normal=200;high=200;urgent=200;immediate=200"));
     assertThat(context.getMeasure(MantisMetrics.STATUS).getValue(), is(Double.valueOf(1000)));
     assertThat(context.getMeasure(MantisMetrics.STATUS).getData(), is("new=125;feedback=125;acknowledged=125;confirmed=125;assigned=125;resolved=125;validated=125;closed=125"));
-
+    assertThat(context.getMeasure(MantisMetrics.DEVELOPERS).getValue(), is(Double.valueOf(1000)));
+    assertThat(context.getMeasure(MantisMetrics.DEVELOPERS).getData(), is("user1=50;user10=50;user11=50;user12=50;user13=50;user14=50;user15=50;user16=50;user17=50;user18=50;user19=50;user2=50;user20=50;user3=50;user4=50;user5=50;user6=50;user7=50;user8=50;user9=50"));
   }
 
   abstract class MockSensorContext implements SensorContext {

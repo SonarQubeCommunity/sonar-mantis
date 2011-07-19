@@ -88,7 +88,7 @@ public class MantisSensorTest {
             issue.setHandler(new AccountData(BigInteger.valueOf(i % 20), users[i % 20], users[i % 20], users[i % 20] + "@gmail.com"));
             issues.add(issue);
           }
-          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "", null);
+          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "");
           when(locator.getMantisConnectPort()).thenReturn(portType);
           when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
           when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });
@@ -165,5 +165,5 @@ public class MantisSensorTest {
     public Measure getMeasure(Metric metric) {
       return getMeasure(null, metric);
     }
-  };
+  }
 }

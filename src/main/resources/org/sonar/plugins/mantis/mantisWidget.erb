@@ -34,7 +34,7 @@
       <div class="dashbox">
         <p class="title">By Status</p>
         <table>
-          <% status_measure.text_value.split(";").each do |status_with_size|
+          <% status_measure.data.split(";").each do |status_with_size|
             status_with_size_array = status_with_size.split("=") %>
             <tr>
               <td align="left">

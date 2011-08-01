@@ -29,12 +29,9 @@ import static org.mockito.Mockito.when;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.wsdl.Message;
 
 import org.apache.commons.configuration.MapConfiguration;
 import org.junit.Before;
@@ -88,7 +85,7 @@ public class MantisSensorTest {
             issue.setHandler(new AccountData(BigInteger.valueOf(i % 20), users[i % 20], users[i % 20], users[i % 20] + "@gmail.com"));
             issues.add(issue);
           }
-          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "");
+          FilterData filter = new FilterData(BigInteger.ONE, null, BigInteger.ONE, true, "current-version", "", "");
           when(locator.getMantisConnectPort()).thenReturn(portType);
           when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
           when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });

@@ -89,7 +89,7 @@ public class MantisSensorTest {
           when(locator.getMantisConnectPort()).thenReturn(portType);
           when(portType.mc_project_get_id_from_name("jer", "pwd", "myproject")).thenReturn(BigInteger.ONE);
           when(portType.mc_filter_get("jer", "pwd", BigInteger.ONE)).thenReturn(new FilterData[] { filter });
-          when(portType.mc_filter_get_issues("jer", "pwd", BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(100)))
+          when(portType.mc_filter_get_issues("jer", "pwd", BigInteger.ONE, filter.getId(), BigInteger.ONE, BigInteger.valueOf(50)))
               .thenReturn((IssueData[])issues.toArray(new IssueData[issues.size()]));
         } catch (Exception e) {
           fail();

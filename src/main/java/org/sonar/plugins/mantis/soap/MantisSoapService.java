@@ -93,7 +93,7 @@ public class MantisSoapService {
     BigInteger firstIssueInPage = BigInteger.ZERO; // temporary hack for SONARPLUGINS-1163
     do {
       result = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(page++),
-          BigInteger.valueOf(100));
+          BigInteger.valueOf(50));
       if(result.length != 0){ 
         if( firstIssueInPage.equals(result[0].getId())) {
           result = new IssueData[0];
@@ -101,7 +101,7 @@ public class MantisSoapService {
         firstIssueInPage = result[0].getId();
         issues.addAll(Arrays.asList(result));       
       }
-    } while (result.length == 100);
+    } while (result.length == 50);
     return issues.toArray(new IssueData[issues.size()]);
   }
 

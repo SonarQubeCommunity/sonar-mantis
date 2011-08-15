@@ -40,7 +40,7 @@ public class MantisMetrics implements Metrics {
   public static final Metric STATUS = new Metric("mantis_issues_status", "Mantis Issues Status", "Number of Mantis Issues by Status",
       Metric.ValueType.DISTRIB, Metric.DIRECTION_NONE, false, DOMAIN);
 
-  public static final Metric DEVELOPERS = new Metric("mantis_developers", "Mantis Issues by developers", "Number of Mantis Issues by developers",
+  public static final Metric DEVELOPERS = new Metric("mantis_developers", "Mantis Issues by developer", "Number of Mantis Issues per developer",
       Metric.ValueType.DISTRIB, Metric.DIRECTION_NONE, false, DOMAIN);
   
   public List<Metric> getMetrics() {

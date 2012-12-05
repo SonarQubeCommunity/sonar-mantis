@@ -25,12 +25,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CountDistributionBuilder;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
@@ -52,27 +52,28 @@ public class MantisSensor implements Sensor {
   private String username;
   private String password;
   private String filterName;
-  
+  private Settings settings;
+
+  public MantisSensor(Settings settings) {
+    this.settings = settings;
+  }
+
   public String getServerUrl() {
     return serverUrl;
   }
 
-  
   public String getUsername() {
     return username;
   }
 
-  
   public String getPassword() {
     return password;
   }
 
-  
   public String getFilterName() {
     return filterName;
   }
 
-  
   public String getProjectName() {
     return projectName;
   }
@@ -81,7 +82,7 @@ public class MantisSensor implements Sensor {
 
   public void analyse(Project project, SensorContext context) {
     initParams(project);
-    if ( !isMandatoryParametersNotEmpty()) {
+    if (!isMandatoryParametersNotEmpty()) {
       LOG.warn("The server url, the project name, the filter name, the username and the password must not be empty.");
       return;
     }
@@ -100,7 +101,7 @@ public class MantisSensor implements Sensor {
     try {
       url = new URL(serverUrl + "/api/soap/mantisconnect.php");
     } catch (MalformedURLException e) {
-      throw new SonarException("Error Mantis web service url \""+serverUrl + "/api/soap/mantisconnect.php"+"\", please verify the parameters", e);
+      throw new SonarException("Error Mantis web service url \"" + serverUrl + "/api/soap/mantisconnect.php" + "\", please verify the parameters", e);
     }
     return new MantisSoapService(url);
   }
@@ -115,10 +116,10 @@ public class MantisSensor implements Sensor {
     }
 
     if (filter == null) {
-      LOG.debug("Unable to find filter '{}' in Mantis for projectId {}",filterName,service.getProjectId());
+      LOG.debug("Unable to find filter '{}' in Mantis for projectId {}", filterName, service.getProjectId());
       for (FilterData f : filters) {
-        LOG.debug("   - {} : {}",f.getName(),f.getId());
-      } 
+        LOG.debug("   - {} : {}", f.getName(), f.getId());
+      }
       throw new SonarException("Unable to find filter '" + filterName + "' in Mantis");
     }
 
@@ -130,7 +131,7 @@ public class MantisSensor implements Sensor {
     for (IssueData issue : issues) {
       issuesByPriority.add(new MantisProperty(issue.getPriority()));
       issuesByStatus.add(new MantisProperty(issue.getStatus()));
-      issuesByDevelopers.add(issue.getHandler()!=null?issue.getHandler().getName():"unassigned");
+      issuesByDevelopers.add(issue.getHandler() != null ? issue.getHandler().getName() : "unassigned");
     }
     saveMeasures(context, service.getProjectId(), issuesByPriority.build().setValue((double) issues.length));
     saveMeasures(context, service.getProjectId(), issuesByStatus.build().setValue((double) issues.length));
@@ -138,17 +139,16 @@ public class MantisSensor implements Sensor {
   }
 
   protected void initParams(Project project) {
-    Configuration configuration = project.getConfiguration();
-    serverUrl = configuration.getString(MantisPlugin.SERVER_URL_PROPERTY);
-    username = configuration.getString(MantisPlugin.USERNAME_PROPERTY);
-    password = configuration.getString(MantisPlugin.PASSWORD_PROPERTY);
-    filterName = configuration.getString(MantisPlugin.FILTER_PROPERTY);
-    projectName = configuration.getString(MantisPlugin.PROJECTNAME_PROPERTY);
+    serverUrl = settings.getString(MantisPlugin.SERVER_URL_PROPERTY);
+    username = settings.getString(MantisPlugin.USERNAME_PROPERTY);
+    password = settings.getString(MantisPlugin.PASSWORD_PROPERTY);
+    filterName = settings.getString(MantisPlugin.FILTER_PROPERTY);
+    projectName = settings.getString(MantisPlugin.PROJECTNAME_PROPERTY);
   }
 
   protected boolean isMandatoryParametersNotEmpty() {
     return StringUtils.isNotEmpty(serverUrl) && StringUtils.isNotEmpty(filterName) && StringUtils.isNotEmpty(projectName)
-        && StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password);
+      && StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(password);
   }
 
   protected void saveMeasures(SensorContext context, BigInteger projectId, Measure issuesMeasure) {

@@ -38,5 +38,4 @@ public class MantisWidgetTest {
     assertThat(widget.getTitle(), notNullValue());
     assertThat(getClass().getResource(widget.getTemplatePath()), notNullValue());
   }
-
 }

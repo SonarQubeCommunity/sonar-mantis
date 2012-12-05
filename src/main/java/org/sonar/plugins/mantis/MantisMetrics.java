@@ -34,15 +34,27 @@ public class MantisMetrics implements Metrics {
 
   public static final String DOMAIN = "Issues";
 
-  public static final Metric PRIORITIES = new Metric("mantis_issues_priorities", "Mantis Issues Priorities",
-      "Number of Mantis Issues by Priorities", Metric.ValueType.DISTRIB, Metric.DIRECTION_NONE, false, DOMAIN);
+  public static final Metric PRIORITIES = new Metric.Builder(
+      "mantis_issues_priorities", "Mantis Issues Priorities",
+      Metric.ValueType.DISTRIB)
+      .setDescription("Number of Mantis Issues by Priorities")
+      .setDirection(Metric.DIRECTION_NONE).setQualitative(false)
+      .setDomain(DOMAIN).create();
 
-  public static final Metric STATUS = new Metric("mantis_issues_status", "Mantis Issues Status", "Number of Mantis Issues by Status",
-      Metric.ValueType.DISTRIB, Metric.DIRECTION_NONE, false, DOMAIN);
+  public static final Metric STATUS = new Metric.Builder(
+      "mantis_issues_status", "Mantis Issues Status",
+      Metric.ValueType.DISTRIB)
+      .setDescription("Number of Mantis Issues by Status")
+      .setDirection(Metric.DIRECTION_NONE).setQualitative(false)
+      .setDomain(DOMAIN).create();
 
-  public static final Metric DEVELOPERS = new Metric("mantis_developers", "Mantis Issues by developer", "Number of Mantis Issues per developer",
-      Metric.ValueType.DISTRIB, Metric.DIRECTION_NONE, false, DOMAIN);
-  
+  public static final Metric DEVELOPERS = new Metric.Builder(
+      "mantis_developers", "Mantis Issues by developer",
+      Metric.ValueType.DISTRIB)
+      .setDescription("Number of Mantis Issues per developer")
+      .setDirection(Metric.DIRECTION_NONE).setQualitative(false)
+      .setDomain(DOMAIN).create();
+
   public List<Metric> getMetrics() {
     return Arrays.asList(PRIORITIES, STATUS, DEVELOPERS);
   }

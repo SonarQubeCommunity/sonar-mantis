@@ -1,103 +1,105 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.codehaus.sonar-plugins</groupId>
-		<artifactId>parent</artifactId>
-		<version>13</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.codehaus.sonar-plugins</groupId>
+    <artifactId>parent</artifactId>
+    <version>14</version>
+  </parent>
 
-	<artifactId>sonar-mantis-plugin</artifactId>
-	<version>0.4-SNAPSHOT</version>
-	<packaging>sonar-plugin</packaging>
+  <artifactId>sonar-mantis-plugin</artifactId>
+  <version>0.4-SNAPSHOT</version>
+  <packaging>sonar-plugin</packaging>
 
-	<name>Sonar Mantis Plugin</name>
-	<description>Retrieves the number of project issues from Mantis BugTracker.</description>
-	<url>http://docs.codehaus.org/display/SONAR/mantis+Plugin</url>
-	<inceptionYear>2011</inceptionYear>
+  <name>Sonar Mantis Plugin</name>
+  <description>Retrieves the number of project issues from Mantis BugTracker.</description>
+  <url>http://docs.codehaus.org/display/SONAR/mantis+Plugin</url>
+  <inceptionYear>2011</inceptionYear>
 
-	<organization>
-		<url>http://printstacktrace.org</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>GNU LGPL 3</name>
-			<url>http://www.gnu.org/licenses/lgpl.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+  <organization>
+    <url>http://printstacktrace.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU LGPL 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-	<developers>
-		<developer>
-			<id>jer</id>
-			<name>Jérémie Lagarde</name>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
+  <developers>
+    <developer>
+      <id>jer</id>
+      <name>Jérémie Lagarde</name>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
 
-	<scm>
-		<connection>scm:git:git@github.com:SonarCommunity/sonar-mantis</connection>
-		<developerConnection>scm:git:git@github.com:SonarCommunity/sonar-mantis</developerConnection>
-		<url>https://github.com/SonarCommunity/sonar-mantis</url>
-	</scm>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://jira.codehaus.org/browse/SONARPLUGINS/component/14695</url>
-	</issueManagement>
-	<ciManagement>
-		<system>Bamboo</system>
-		<url>http://ci.codehaus.org/browse/SONAR-MANTIS</url>
-	</ciManagement>
+  <scm>
+    <connection>scm:git:git@github.com:SonarCommunity/sonar-mantis</connection>
+    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-mantis</developerConnection>
+    <url>https://github.com/SonarCommunity/sonar-mantis</url>
+  </scm>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/14695</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Bamboo</system>
+    <url>http://ci.codehaus.org/browse/SONAR-MANTIS</url>
+  </ciManagement>
 
-	<properties>
-		<sonar.pluginClass>org.sonar.plugins.mantis.MantisPlugin</sonar.pluginClass>
-		<sonar.pluginName>Mantis</sonar.pluginName>
-		<sonar.version>2.2</sonar.version>
-		<mantis.version>1.2.6</mantis.version>
+  <properties>
+    <sonar.pluginClass>org.sonar.plugins.mantis.MantisPlugin</sonar.pluginClass>
+    <sonar.pluginName>Mantis</sonar.pluginName>
+    <sonar.version>3.0</sonar.version>
+    <mantis.version>1.2.9</mantis.version>
 
-		<!-- License header configuration -->
-		<license.owner>Jérémie Lagarde</license.owner>
-	</properties>
+    <!-- License header configuration -->
+    <license.owner>Jérémie Lagarde</license.owner>
+  </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.codehaus.sonar</groupId>
-			<artifactId>sonar-plugin-api</artifactId>
-			<version>${sonar.version}</version>
-			<scope>provided</scope>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.sonar</groupId>
+      <artifactId>sonar-plugin-api</artifactId>
+      <version>${sonar.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>biz.futureware.mantis</groupId>
-			<artifactId>mantis-axis-soap-client</artifactId>
-			<version>${mantis.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>biz.futureware.mantis</groupId>
+      <artifactId>mantis-axis-soap-client</artifactId>
+      <version>${mantis.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
-			<version>1.3</version>
-			<exclusions>
-				<!-- Provided by Sonar -->
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.4</version>
+      <exclusions>
+        <!-- Provided by Sonar -->
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.0.9</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<!-- unit tests -->
-		<dependency>
-			<groupId>org.codehaus.sonar</groupId>
-			<artifactId>sonar-testing-harness</artifactId>
-			<version>${sonar.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- unit tests -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>2.0.9</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.sonar</groupId>
+      <artifactId>sonar-testing-harness</artifactId>
+      <version>${sonar.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

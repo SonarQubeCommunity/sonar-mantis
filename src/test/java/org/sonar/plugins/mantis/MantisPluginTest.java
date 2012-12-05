@@ -20,17 +20,11 @@
 
 package org.sonar.plugins.mantis;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.picocontainer.Characteristics;
-import org.picocontainer.MutablePicoContainer;
-import org.sonar.api.Extension;
-import org.sonar.api.Plugin;
-import org.sonar.api.platform.PluginRepository;
+import org.sonar.api.SonarPlugin;
 
 /**
  * @author Jeremie Lagarde
@@ -40,16 +34,8 @@ public class MantisPluginTest {
 
   @Test
   public void testRegisterPlugin() {
-    MutablePicoContainer container = mock(MutablePicoContainer.class);
-    when(container.as(Characteristics.CACHE)).thenReturn(container);
-    when(container.addComponent(Class.class, Class.class)).thenReturn(container);
-    PluginRepository repository = new PluginRepository() {
-    };
-    Plugin plugin = new MantisPlugin();
-    repository.registerPlugin(container, plugin, Extension.class);
-    assertEquals(repository.getPlugin("mantis"), plugin);
-    assertNotNull(repository.getPlugin("mantis").getName());
-    assertNotNull(repository.getPlugin("mantis").getDescription());
+     SonarPlugin plugin = new MantisPlugin();
+     assertThat(plugin.getExtensions().size(), equalTo(4));
   }
 
 }

@@ -77,7 +77,7 @@ public class MantisSoapService {
     this.password = password;
     projectId = mantisConnectPortType.mc_project_get_id_from_name(login, password, project);
     String version = mantisConnectPortType.mc_version();
-    LOG.info("Connected to Mantis({})",version);
+    LOG.info("Connected to Mantis({})", version);
   }
 
   public FilterData[] getFilters() throws RemoteException {
@@ -92,16 +92,36 @@ public class MantisSoapService {
     int page = 1;
     BigInteger firstIssueInPage = BigInteger.ZERO; // temporary hack for SONARPLUGINS-1163
     do {
-      result = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(page++),
-          BigInteger.valueOf(50));
-      if(result.length != 0){ 
-        if( firstIssueInPage.equals(result[0].getId())) {
-          result = new IssueData[0];
+      try {
+        LOG.debug("Get issues from index {} to {}", ((page - 1) * 50), (page * 50) - 1);
+        result = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(page++),
+            BigInteger.valueOf(50));
+        if (result.length != 0) {
+          if (firstIssueInPage.equals(result[0].getId())) {
+            result = new IssueData[0];
+          }
+          firstIssueInPage = result[0].getId();
+          issues.addAll(Arrays.asList(result));
         }
-        firstIssueInPage = result[0].getId();
-        issues.addAll(Arrays.asList(result));       
+      } catch (Exception ex) {
+        LOG.warn("Get issues via SOAP", ex);
+        for (int i = ((page - 2) * 50); i < ((page - 1) * 50); i++) {
+          LOG.info("Trying to get issue at index {}", i);
+          try {
+            IssueData[] data = mantisConnectPortType.mc_filter_get_issues(username, password, getProjectId(), filter.getId(), BigInteger.valueOf(i + 1),
+                BigInteger.valueOf(1));
+            if (data.length == 1) {
+              issues.add(data[0]);
+              LOG.info("Issue {} recovered.", data[0].getId());
+            } else {
+              break;
+            }
+          } catch (Exception ex2) {
+            LOG.warn("Get issue at index " + i, ex);
+          }
+        }
       }
-    } while (result.length == 50);
+    } while (result == null || result.length == 50);
     return issues.toArray(new IssueData[issues.size()]);
   }
 

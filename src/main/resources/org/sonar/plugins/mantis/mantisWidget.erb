@@ -1,8 +1,9 @@
 <%
+   issues_measure = measure('mantis_issues')
    priorities_measure = measure('mantis_issues_priorities')
    status_measure = measure('mantis_issues_status')
 
-   if priorities_measure
+   if issues_measure
 %>
   <table width="100%">
     <tr>
@@ -11,8 +12,8 @@
         <p class="title">Mantis Issues</p>
         <span class="big">
           <p>
-            <%= format_measure(priorities_measure, {:url => priorities_measure.url}) -%>
-            <%= dashboard_configuration.selected_period? ? format_variation(priorities_measure) : trend_icon(priorities_measure) -%>
+            <%= format_measure(issues_measure, {:url => issues_measure.url}) -%>
+            <%= dashboard_configuration.selected_period? ? format_variation(issues_measure) : trend_icon(issues_measure) -%>
           </p>
         </span>
       </div>

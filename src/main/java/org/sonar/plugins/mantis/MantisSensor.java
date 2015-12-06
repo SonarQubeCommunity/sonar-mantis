@@ -133,6 +133,7 @@ public class MantisSensor implements Sensor {
       issuesByStatus.add(new MantisProperty(issue.getStatus()));
       issuesByDevelopers.add(issue.getHandler() != null ? issue.getHandler().getName() : "unassigned");
     }
+    saveMeasures(context, service.getProjectId(), new Measure(MantisMetrics.ISSUES).setIntValue(issues.length));
     saveMeasures(context, service.getProjectId(), issuesByPriority.build().setValue((double) issues.length));
     saveMeasures(context, service.getProjectId(), issuesByStatus.build().setValue((double) issues.length));
     saveMeasures(context, service.getProjectId(), issuesByDevelopers.build().setValue((double) issues.length));

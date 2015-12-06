@@ -1,19 +1,25 @@
 <%
+   issues_measure = measure('mantis_issues')
    priorities_measure = measure('mantis_issues_priorities')
    status_measure = measure('mantis_issues_status')
 
-   if priorities_measure
+   if issues_measure
 %>
-  <div class="yui-g">
-    <div class="yui-u first">
+  <table width="100%">
+    <tr>
+    <td width="50%" valign="top">
       <div class="dashbox">
         <p class="title">Mantis Issues</p>
         <span class="big">
           <p>
-            <%= format_measure(priorities_measure, {:url => priorities_measure.url}) -%>
-            <%= dashboard_configuration.selected_period? ? format_variation(priorities_measure) : trend_icon(priorities_measure) -%>
+            <%= format_measure(issues_measure, {:url => issues_measure.url}) -%>
+            <%= dashboard_configuration.selected_period? ? format_variation(issues_measure) : trend_icon(issues_measure) -%>
           </p>
         </span>
+      </div>
+    </td>
+    <td valign="top">
+      <div class="dashbox">
         <p class="title">By Priority</p>
         <table>
           <% priorities_measure.data.split(";").each do |priority_with_size|
@@ -25,12 +31,15 @@
               <td align="right" style="padding-left: 10px;">
                 <%= priority_with_size_array[1] -%>
               </td>
+              <td align="left" style="padding-left: 10px;">
+                <span style='width:100%'><ul class='hbar' style='float: right;'><li style='background-color: rgb(119, 119, 119); width: <%= (priority_with_size_array[1].to_f * 100 / priorities_measure.value.to_f ).ceil -%>%'>&nbsp;</li></ul></span>
+              </td>
             </tr>
           <% end %>
         </table>
       </div>
-    </div>
-    <div class="yui-u">
+    </td>
+    <td valign="top">
       <div class="dashbox">
         <p class="title">By Status</p>
         <table>
@@ -43,10 +52,14 @@
               <td align="right" style="padding-left: 10px;">
                 <%= status_with_size_array[1] -%>
               </td>
+              <td align="left" style="padding-left: 10px;">
+                <span style='width:100%'><ul class='hbar' style='float: right;'><li style='background-color: rgb(119, 119, 119); width: <%= (status_with_size_array[1].to_f * 100 / status_measure.value.to_f ).ceil -%>%'>&nbsp;</li></ul></span>
+              </td>
             </tr>
           <% end %>
         </table>
       </div>
-    </div>
-  </div>
+    </td>
+    </tr>
+  </table>
 <% end %>
